@@ -1,0 +1,45 @@
+[project]
+name = "studyflow"
+version = "0.1.0"
+description = "This is application for planing your study."
+authors = [
+    {name = "Anton",email = "anton1programmist@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[all] (>=0.117.1,<0.118.0)",
+    "uvicorn (>=0.37.0,<0.38.0)"
+]
+
+[tool.poetry]
+packages = [{include = "studyflow", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.13.2,<0.14.0)",
+    "mypy (>=1.18.2,<2.0.0)",
+    "pytest (>=8.4.2,<9.0.0)"
+]
+
+[tool.ruff]
+line-length = 79
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 79
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
