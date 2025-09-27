@@ -1,0 +1,56 @@
+name: Deploy Project
+
+on:
+  push:
+    branches:
+      - main  # или ветка, которую хочешь деплоить
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Setup Python
+    - nup-ame: Setup Python
+      uses: actions/setpython@v4
+      with:
+        python-version: '3.12'
+
+    # 3. Install Python dependencies
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. Run Pytest
+    - name: Run tests
+      run: |
+        pytest --maxfail=1 --disable-warnings -q
+      continue-on-error: false  # workflow остановится при падении тестов
+
+    # 5. SSH into remote server and deploy
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.REMOTE_SSH_KEY }}
+        port: ${{ secrets.REMOTE_PORT }}
+        script: |
+          cd /host/StudyFlow
+          git pull origin main
+          # Обновление зависимостей Python
+          poetry install
+          # Сборка фронтенда
+          cd src
+          cd frontend
+          npm install
+          npm run build
+          cd ..
+          # Перезапуск systemd сервиса
+          systemctl restart StudyFlow.service
+          systemctl status StudyFlow.service --no-pager
