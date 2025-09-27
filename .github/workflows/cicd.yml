@@ -1,9 +1,9 @@
-name: Deploy Project
+name: Deploy Project with Poetry
 
 on:
   push:
     branches:
-      - main  # или ветка, которую хочешь деплоить
+      - main
 
 jobs:
   test-and-deploy:
@@ -20,19 +20,24 @@ jobs:
       with:
         python-version: '3.12'
 
-    # 3. Install Python dependencies
-    - name: Install Python dependencies
+    # 3. Install Poetry
+    - name: Install Poetry
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    # 4. Run Pytest
+    # 4. Install project dependencies via Poetry
+    - name: Install dependencies
+      run: |
+        poetry install --no-interaction --no-ansi
+
+    # 5. Run tests
     - name: Run tests
       run: |
-        pytest --maxfail=1 --disable-warnings -q
-      continue-on-error: false  # workflow остановится при падении тестов
+        poetry run pytest --maxfail=1 --disable-warnings -q
+      continue-on-error: false
 
-    # 5. SSH into remote server and deploy
+    # 6. SSH into remote server and deploy
     - name: Deploy to server
       uses: appleboy/ssh-action@v0.1.6
       with:
@@ -43,14 +48,13 @@ jobs:
         script: |
           cd /host/StudyFlow
           git pull origin main
-          # Обновление зависимостей Python
-          poetry install
+          # Обновление зависимостей Python через Poetry
+          poetry install --no-dev --no-interaction --no-ansi
           # Сборка фронтенда
-          cd src
-          cd frontend
-          npm install
+          cd src/frontend
+          npm ci
           npm run build
-          cd ..
+          cd ../..
           # Перезапуск systemd сервиса
           systemctl restart StudyFlow.service
           systemctl status StudyFlow.service --no-pager
