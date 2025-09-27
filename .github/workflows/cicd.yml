@@ -16,7 +16,7 @@ jobs:
 
     # 2. Setup Python
     - name: Setup Python
-      uses: actions/setpython@v4
+      uses: actions/setup-python@v4
       with:
         python-version: '3.12'
 
