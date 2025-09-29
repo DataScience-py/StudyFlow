@@ -49,9 +49,12 @@ jobs:
           cd host/StudyFlow
           git pull origin main
           # Обновление зависимостей Python через Poetry
+          which poetry
           poetry install --no-interaction
           # Сборка фронтенда
           cd src/frontend
+          npm -v
+          node -v
           npm ci
           npm run build
           cd ../..
