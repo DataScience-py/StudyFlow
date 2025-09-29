@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO: deleate test method
+# test api
 @app.get("/api/hello")
 def hello() -> dict[str, str]:
     """Hello router.
