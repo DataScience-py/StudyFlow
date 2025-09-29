@@ -54,6 +54,7 @@ jobs:
           # Сборка фронтенда
           cd src/frontend
           npm -v
+          which npm
           node -v
           npm ci
           npm run build
