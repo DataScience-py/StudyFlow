@@ -46,7 +46,7 @@ jobs:
         key: ${{ secrets.REMOTE_SSH_KEY }}
         port: ${{ secrets.REMOTE_PORT }}
         script: |
-          cd /host/StudyFlow
+          cd host/StudyFlow
           git pull origin main
           # Обновление зависимостей Python через Poetry
           poetry install --no-dev --no-interaction --no-ansi
